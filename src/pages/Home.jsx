@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PRICE } from '../content.js'
 import { money } from '../format.js'
@@ -19,43 +20,144 @@ const points = [
   },
 ]
 
+function Spoken({ text, active }) {
+  return (
+    <p>
+      {text}
+      {active ? <i className="live-caret" aria-hidden="true" /> : null}
+    </p>
+  )
+}
+
+function transcriptFile(turns) {
+  const stamp = new Date()
+  const when = stamp.toLocaleString('en-GB', { dateStyle: 'long', timeStyle: 'short' })
+  const lines = [
+    'DeskAgent',
+    'Transcript',
+    when,
+    '',
+    ...turns.flatMap((turn) => [turn.role === 'agent' ? 'Sophie' : 'You', turn.content, '']),
+  ]
+  const day = stamp.toISOString().slice(0, 10)
+  return { name: `deskagent-transcript-${day}.txt`, text: lines.join('\n') }
+}
+
+function LiveTranscript({ status, turns }) {
+  const logRef = useRef(null)
+  const [saved, setSaved] = useState(false)
+  const signature = turns.map((turn) => `${turn.id}:${turn.content}`).join('\n')
+
+  useEffect(() => {
+    const node = logRef.current
+    if (!node) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    node.scrollTo({ top: node.scrollHeight, behavior: reduce ? 'auto' : 'smooth' })
+  }, [signature])
+
+  useEffect(() => {
+    if (status !== 'ended') setSaved(false)
+  }, [status])
+
+  function saveTranscript() {
+    const file = transcriptFile(turns)
+    const url = URL.createObjectURL(new Blob([file.text], { type: 'text/plain;charset=utf-8' }))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = file.name
+    link.click()
+    URL.revokeObjectURL(url)
+    setSaved(true)
+  }
+
+  const label = status === 'live' ? 'Live transcript' : status === 'ended' ? 'Transcript' : 'The call'
+  const waiting = status === 'live'
+    ? 'The words will appear as they are spoken.'
+    : 'Sophie is answering.'
+
+  return (
+    <div className={`live-script${status === 'live' ? ' is-live' : ''}`}>
+      <div className="live-head">
+        <p className="kicker">
+          {status === 'live' ? <i className="live-dot" aria-hidden="true" /> : null}
+          {label}
+        </p>
+        <span className="live-signal" aria-hidden="true" />
+      </div>
+      <ol ref={logRef} aria-live="polite" aria-relevant="additions text">
+        {turns.length ? turns.map((turn, index) => {
+          const current = status === 'live' && index === turns.length - 1
+          const role = turn.role === 'user' ? ' is-user' : ''
+          return (
+            <li key={turn.id} className={`live-line${role}${current ? ' is-current' : ''}`}>
+              <span>{turn.role === 'agent' ? 'Sophie' : 'You'}</span>
+              <Spoken text={turn.content} active={current} />
+            </li>
+          )
+        }) : (
+          <li className="live-wait">{waiting}</li>
+        )}
+      </ol>
+      {status === 'ended' && turns.length ? (
+        <button className="btn btn-quiet live-save" type="button" onClick={saveTranscript}>
+          {saved ? 'Saved' : 'Save transcript'}
+        </button>
+      ) : null}
+    </div>
+  )
+}
+
 export default function Home() {
   useTitle('DeskAgent')
+  const [conversation, setConversation] = useState({ status: 'idle', turns: [] })
+  const onConversation = useCallback((next) => {
+    setConversation(next)
+  }, [])
+  const showing = conversation.status === 'ringing'
+    || conversation.status === 'connecting'
+    || conversation.status === 'live'
+    || (conversation.status === 'ended' && conversation.turns.length > 0)
 
   return (
     <article className="page page-home">
       <header className="home-hero">
         <div className="home-copy">
-          <p className="kicker">Telephone answering for service businesses</p>
-          <h1>
-            The telephone is answered.
-            <br />
-            The issues are understood.
-            <br />
-            The appointment is made.
-          </h1>
-          <p className="lede">
-            DeskAgent speaks with the customer, understands the request, and books the visit. It is there while you are
-            occupied, and after you have locked up. The charge is {money(PRICE)} a month.
-          </p>
-          <div className="actions">
-            <Link className="btn" to="/service">
-              The service
-            </Link>
-            <p className="price-note">
-              <strong>{money(PRICE)}</strong>
-              <span>a month</span>
-            </p>
-          </div>
+          {showing ? (
+            <LiveTranscript status={conversation.status} turns={conversation.turns} />
+          ) : (
+            <>
+              <p className="kicker">Telephone answering for service businesses</p>
+              <h1>
+                The telephone is answered.
+                <br />
+                The issues are understood.
+                <br />
+                The appointment is made.
+              </h1>
+              <p className="lede">
+                DeskAgent speaks with the customer, understands the request, and books the visit. It is there while you are
+                occupied, and after you have locked up. The charge is {money(PRICE)} a month.
+              </p>
+              <div className="actions">
+                <Link className="btn" to="/service">
+                  The service
+                </Link>
+                <p className="price-note">
+                  <strong>{money(PRICE)}</strong>
+                  <span>a month</span>
+                </p>
+              </div>
+            </>
+          )}
         </div>
-        <ProspectCall />
+        <ProspectCall onConversation={onConversation} />
       </header>
 
       <section className="rule-block" aria-labelledby="home-points">
         <h2 id="home-points" className="sr-only">
           What DeskAgent does
         </h2>
-        <div className="thirds">
+        <div className="thirds points">
           {points.map((point) => (
             <article key={point.title}>
               <h3>{point.title}</h3>
@@ -63,48 +165,6 @@ export default function Home() {
             </article>
           ))}
         </div>
-      </section>
-
-      <section className="rule-block endings" aria-labelledby="home-compare">
-        <h2 id="home-compare">The same request, two endings</h2>
-        <blockquote className="request">
-          <p>Can someone come and look at a leaking water heater today?</p>
-        </blockquote>
-        <div className="endings-grid">
-          <article className="ending ending-miss">
-            <p className="ending-mark">Unanswered</p>
-            <p className="ending-time">No time</p>
-            <dl className="slip">
-              <div>
-                <dt>Work</dt>
-                <dd>Not recorded</dd>
-              </div>
-              <div>
-                <dt>Where</dt>
-                <dd>Not recorded</dd>
-              </div>
-            </dl>
-            <p className="ending-note">You hear of it later, if a message is left at all.</p>
-          </article>
-          <article className="ending ending-book">
-            <p className="ending-mark">Booked</p>
-            <p className="ending-time">2.30 p.m.</p>
-            <dl className="slip">
-              <div>
-                <dt>Work</dt>
-                <dd>Water heater leak</dd>
-              </div>
-              <div>
-                <dt>Where</dt>
-                <dd>14 Birch Avenue</dd>
-              </div>
-            </dl>
-            <p className="ending-note">Today. The brief is with you before you call back.</p>
-          </article>
-        </div>
-        <p className="onward">
-          <Link to="/pricing">See the charge</Link>
-        </p>
       </section>
     </article>
   )

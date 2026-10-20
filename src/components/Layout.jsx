@@ -39,7 +39,8 @@ export default function Layout() {
       <header className="mast">
         <div className={`wrap mast-inner${pathname === '/' ? ' mast-home' : ''}`}>
           <NavLink className="brand" to="/">
-            DeskAgent
+            <span className="brand-name">DeskAgent</span>
+            <span className="brand-line">Commercial Agentic Phone Service Platform</span>
           </NavLink>
           <nav className="mast-nav" aria-label="Primary">
             {nav.map((item) => (
@@ -57,12 +58,14 @@ export default function Layout() {
         <Outlet />
       </main>
       <footer className="colophon">
-        <div className="wrap colophon-inner">
+        <div className={`wrap colophon-grid${pathname === '/' ? ' mast-home' : ''}`}>
           <div>
             <p className="brand brand-plain">DeskAgent</p>
-            <p>Answers the telephone. Makes the appointment. {money(PRICE)} a month.</p>
+            <p className="colophon-kicker">Commercial Agentic Phone Service Platform</p>
+            <p>The telephone is answered, the request is understood, and the appointment is made.</p>
           </div>
           <nav aria-label="Footer">
+            <p className="colophon-label">Pages</p>
             {nav.map((item) => (
               <NavLink key={item.to} to={item.to}>
                 {item.label}
@@ -70,8 +73,13 @@ export default function Layout() {
             ))}
             <NavLink to="/enquire">Enquire</NavLink>
           </nav>
+          <div>
+            <p className="colophon-label">The charge</p>
+            <p className="colophon-price">{money(PRICE)}</p>
+            <p>a month, for the line to be answered and the visit booked.</p>
+          </div>
         </div>
-        <p className="wrap legal">© {new Date().getFullYear()} DeskAgent.</p>
+        <p className={`wrap legal${pathname === '/' ? ' mast-home' : ''}`}>© {new Date().getFullYear()} DeskAgent.</p>
       </footer>
     </>
   )

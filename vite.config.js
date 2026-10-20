@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { voiceTrial } from './server/voiceTrial.js'
+import { attachTranscriptStream, voiceTrial } from './server/voiceTrial.js'
 
 function clientIp(req) {
   const value = req.socket?.remoteAddress || ''
@@ -31,6 +31,11 @@ function voiceTrialPlugin() {
   return {
     name: 'voice-trial',
     configureServer(server) {
+      server.middlewares.use('/api/voice-transcript', async (req, res) => {
+        const query = req.url?.includes('?') ? req.url.slice(req.url.indexOf('?')) : ''
+        const callId = new URLSearchParams(query).get('callId')
+        await attachTranscriptStream(req, res, { ip: clientIp(req), callId })
+      })
       server.middlewares.use('/api/voice-trial', async (req, res) => {
         try {
           const body = req.method === 'DELETE' ? await readBody(req) : {}

@@ -2,16 +2,11 @@ import { money } from './format.js'
 
 export const PRICE = 150
 export const WEEKS_PER_MONTH = 4.3
-export const CALL_PHASES = 6
-export const CALL_DELAYS = [1100, 1450, 1650, 1550, 1750, 5200]
-export const SPLIT_PHASES = 3
-export const SPLIT_DELAYS = [1000, 1700, 2400]
 
 export const nav = [
-  { href: '#why', label: 'Why it pays' },
-  { href: '#product', label: 'Product' },
-  { href: '#studio', label: 'Sample call' },
-  { href: '#pricing', label: 'Pricing' },
+  { to: '/service', label: 'The service' },
+  { to: '/pricing', label: 'Pricing' },
+  { to: '/questions', label: 'Questions' },
 ]
 
 export const trades = [
@@ -29,102 +24,26 @@ export const trades = [
   'Chiropractic',
 ]
 
-export const scenarios = [
-  {
-    id: 'plumbing',
-    trade: 'Plumbing',
-    business: 'Harbor Plumbing',
-    lines: [
-      { from: 'caller', text: 'Our water heater is leaking into the garage. Can someone come today?' },
-      { from: 'agent', text: 'I can take that. Harbor Plumbing has a leak visit open today at 2:30 PM.' },
-      { from: 'caller', text: 'We’ll take 2:30. The address is 14 Birch Avenue.' },
-      {
-        from: 'agent',
-        text: 'Booked for today at 2:30 at 14 Birch Avenue. The note says the water heater is leaking into the garage.',
-      },
-    ],
-    booking: {
-      service: 'Water heater leak',
-      when: 'Today · 2:30 PM',
-      detail: '14 Birch Avenue',
-    },
-  },
-  {
-    id: 'dental',
-    trade: 'Dental',
-    business: 'Brightline Dental',
-    lines: [
-      { from: 'caller', text: 'Hi, I’m new in town. Is there a cleaning opening this week?' },
-      { from: 'agent', text: 'Thursday at 9:10 AM is open for a new-patient cleaning. I can reserve it now.' },
-      { from: 'caller', text: 'Thursday morning is perfect.' },
-      {
-        from: 'agent',
-        text: 'You’re booked Thursday at 9:10. Arrive a few minutes early for a short new-patient form.',
-      },
-    ],
-    booking: {
-      service: 'New-patient cleaning',
-      when: 'Thursday · 9:10 AM',
-      detail: 'Arrive early for the form',
-    },
-  },
-  {
-    id: 'salon',
-    trade: 'Salon',
-    business: 'Atelier North',
-    lines: [
-      { from: 'caller', text: 'I need a cut and color. Anything open Saturday?' },
-      {
-        from: 'agent',
-        text: 'Saturday at 1:15 works for cut and color with a senior stylist. Plan on about two and a half hours.',
-      },
-      { from: 'caller', text: 'I’ll take 1:15.' },
-      { from: 'agent', text: 'Booked Saturday at 1:15 for cut and color. A reminder goes out the day before.' },
-    ],
-    booking: {
-      service: 'Cut and color',
-      when: 'Saturday · 1:15 PM',
-      detail: 'Senior stylist · 2.5 hours',
-    },
-  },
-  {
-    id: 'hvac',
-    trade: 'HVAC',
-    business: 'Northwind Comfort',
-    lines: [
-      { from: 'caller', text: 'The AC is on, but the house will not cool. Can you send someone?' },
-      { from: 'agent', text: 'I can schedule a no-cool diagnostic tomorrow between 8 and 10 AM. Should I book it?' },
-      { from: 'caller', text: 'Tomorrow morning works.' },
-      { from: 'agent', text: 'Booked for tomorrow, 8 to 10 AM. You’re on the route even if tonight stays warm.' },
-    ],
-    booking: {
-      service: 'No-cool diagnostic',
-      when: 'Tomorrow · 8–10 AM',
-      detail: 'Morning route',
-    },
-  },
-]
-
 export const day = [
   {
-    time: '7:12 AM',
+    time: '7.12 a.m.',
     title: 'Before the trucks roll',
-    body: 'A no-cool call comes in while the shop is still opening. DeskAgent books 10:40 AM and the route starts full.',
+    body: 'A no-cool call comes in while the shop is still opening. DeskAgent books 10.40 a.m. and the route starts full.',
   },
   {
-    time: '11:03 AM',
+    time: '11.03 a.m.',
     title: 'Both techs are in attics',
-    body: 'A maintenance visit is set for Thursday at 9:00. Nobody climbs down to catch the phone.',
+    body: 'A maintenance visit is set for Thursday at 9.00. Nobody climbs down to catch the telephone.',
   },
   {
-    time: '3:26 PM',
+    time: '3.26 p.m.',
     title: 'Overflow in the afternoon',
-    body: 'An estimate request lands while both jobs are still running. 5:10 PM goes on the book.',
+    body: 'An estimate request lands while both jobs are still running. 5.10 p.m. goes on the book.',
   },
   {
-    time: '9:18 PM',
+    time: '9.18 p.m.',
     title: 'The shop is dark',
-    body: 'A leaking unit gets the first morning slot, 8:00 AM. The caller hangs up with a time, not a voicemail beep.',
+    body: 'A leaking unit gets the first morning slot, 8.00 a.m. The caller hangs up with a time, rather than a voicemail tone.',
   },
 ]
 
@@ -132,7 +51,7 @@ export const industryCards = [
   { name: 'Plumbing', books: 'Leaks, installs, and estimates' },
   { name: 'HVAC', books: 'No-cool visits, maintenance, replacements' },
   { name: 'Dental', books: 'New patients, cleanings, follow-ups' },
-  { name: 'Salons & spas', books: 'Cuts, color, and longer treatments' },
+  { name: 'Salons & spas', books: 'Cuts, colour, and longer treatments' },
   { name: 'Veterinary', books: 'Sick visits, vaccines, checkups' },
   { name: 'Auto repair', books: 'Drop-off windows and diagnostics' },
   { name: 'Legal intake', books: 'Consultation times' },
@@ -163,7 +82,7 @@ export const steps = [
   {
     n: '02',
     title: 'Teach it your book',
-    body: 'Add services, how long they take, the windows you can honor, your service area, and the requests that should come straight to you.',
+    body: 'Add services, how long they take, the windows you can honour, your service area, and the requests that should come straight to you.',
   },
   {
     n: '03',
@@ -187,7 +106,7 @@ export const objections = [
   },
   {
     q: `${money(PRICE)} is still another bill.`,
-    a: `Put your missed calls and your average job into the calculator. If one recovered appointment is worth more than ${money(PRICE)}, a single booking covers the month.`,
+    a: `The pricing page will take your missed calls and the value of a job. If one recovered appointment is worth more than ${money(PRICE)}, a single booking covers the month.`,
   },
 ]
 
@@ -269,7 +188,7 @@ export const faqs = [
   },
   {
     q: 'Can we hear the shape of a call first?',
-    a: 'The sample calls on this page are demonstrations. Your setup uses your services, your hours, and your wording.',
+    a: 'Speak with Sophie on the front page. She answers questions about how DeskAgent would take your calls. Your own line uses your services, your hours, and your wording.',
   },
 ]
 

@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "react-router-dom": "^7.18.4",
+    "retell-client-js-sdk": "^3.0.2"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.0.4",
